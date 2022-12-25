@@ -33,13 +33,17 @@ class PopularmovieCubit extends Cubit<PopularmovieState> {
         (r) {
           // data is ready we send data
           // print('data retrived $r');
-          List<MovieModel> x = listOfMovieModelFromJsonString(r);
-          emit(
-              PopularmovieState(list: x, isloading: false, isdataready: true));
+          Either<String, List<MovieModel>> x =
+              listOfMovieModelFromJsonString(r);
+          x.fold(
+              (l) => emit(PopularmovieState(
+                  isloading: false, isdataready: false, error: l)),
+              (r) => PopularmovieState(
+                  list: r, isloading: false, isdataready: true));
         },
       );
     } catch (e) {
-      print(e);
+      // print(e);
       emit(PopularmovieState(
           isloading: false, isdataready: false, error: e.toString()));
     }

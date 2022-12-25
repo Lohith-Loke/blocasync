@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
+
 class MovieModel {
   late final String? id;
   late final String? rank;
@@ -60,21 +62,21 @@ class MovieModel {
   }
 }
 
-List<MovieModel> listOfMovieModelFromJsonString(String str) {
+Either<String, List<MovieModel>> listOfMovieModelFromJsonString(String str) {
   List<MovieModel> L = [];
   var m = json.decode(str);
-
-  // print(m);
-
-  for (var x in m['items']) {
-    try {
-      MovieModel obj = MovieModel.fromJson(x);
-      L.add(obj);
-    } catch (e) {
-      //   ignore exception thrown
-      print(e);
+  if (m["errorMessage"] == "") {
+    for (var x in m['items']) {
+      try {
+        MovieModel obj = MovieModel.fromJson(x);
+        L.add(obj);
+      } catch (e) {
+        //   ignore exception thrown
+        // print(e);
+      }
     }
+  } else {
+    return left(m["errorMessage"].toString());
   }
-  // print(L);
-  return L;
+  return right(L);
 }
